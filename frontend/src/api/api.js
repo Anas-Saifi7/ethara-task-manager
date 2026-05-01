@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://ethara-task-manager-14sh.onrender.com/"
+  baseURL: "https://ethara-task-manager-14sh.onrender.com/api"
   //  "http://localhost:5000/api"
 });
 
