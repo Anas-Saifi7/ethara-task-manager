@@ -15,24 +15,22 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "https://ethara-task-manager-rouge.vercel.app",
+  "https://ethara-task-manager-lm3t0ubpr-snapboards-projects.vercel.app"
 ];
 
-//  CORS CONFIG (FINAL)
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (like mobile apps / postman)
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error("CORS not allowed ❌"));
+        callback(new Error("CORS not allowed"));
       }
     },
-    credentials: true,
+    credentials: true
   })
 );
+
 
 //  Middlewares
 app.use(express.json());
