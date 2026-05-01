@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api"
+  baseURL: "https://ethara-task-manager-14sh.onrender.com/"
+  //  "http://localhost:5000/api"
 });
 
 export const setAuthToken = (token) => {
