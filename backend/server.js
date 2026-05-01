@@ -11,26 +11,18 @@ import userRoutes from "./routes/userRoutes.js";
 dotenv.config();
 const app = express();
 
-//  Allowed Origins (IMPORTANT)
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://ethara-task-manager-rouge.vercel.app",
-  "https://ethara-task-manager-lm3t0ubpr-snapboards-projects.vercel.app"
-];
-
+//  CORS FIX (FINAL)
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("CORS not allowed"));
-      }
-    },
-    credentials: true
+    origin: true, 
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
   })
 );
 
+//  HANDLE PREFLIGHT (VERY IMPORTANT)
+app.options("*", cors());
 
 //  Middlewares
 app.use(express.json());
@@ -38,7 +30,7 @@ app.use(express.json());
 //  DB Connection
 connectDB();
 
-// Test Route
+//  Test Route
 app.get("/", (req, res) => {
   res.send("API is working 🚀");
 });
@@ -49,15 +41,15 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/users", userRoutes);
 
-//  Error Handler (important)
+//  Global Error Handler
 app.use((err, req, res, next) => {
-  console.error("Error:", err.message);
+  console.error("❌ Error:", err.message);
   res.status(500).json({ msg: err.message || "Server Error" });
 });
 
-// Server Start
+//  Server Start
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT} 🚀`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
