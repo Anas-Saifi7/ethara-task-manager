@@ -1,29 +1,65 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import connectDB  from './config/db.js';
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import connectDB from "./config/db.js";
 
 import authRoutes from "./routes/authRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
-import userRoutes from "./routes/userRoutes.js"
-
+import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
 const app = express();
-app.use(cors());
+
+//  Allowed Origins (IMPORTANT)
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://ethara-task-manager-rouge.vercel.app",
+];
+
+//  CORS CONFIG (FINAL)
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // allow requests with no origin (like mobile apps / postman)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS not allowed ❌"));
+      }
+    },
+    credentials: true,
+  })
+);
+
+//  Middlewares
 app.use(express.json());
+
+//  DB Connection
 connectDB();
 
+// Test Route
 app.get("/", (req, res) => {
-    res.send("API is working");
+  res.send("API is working 🚀");
 });
 
-app.use("/api/auth",authRoutes);
-app.use('/api/projects', projectRoutes);
-app.use('/api/tasks', taskRoutes);
+//  Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/projects", projectRoutes);
+app.use("/api/tasks", taskRoutes);
 app.use("/api/users", userRoutes);
 
-app.listen(process.env.PORT, () => {
-    console.log(`Server is running on port ${process.env.PORT}`);
+//  Error Handler (important)
+app.use((err, req, res, next) => {
+  console.error("Error:", err.message);
+  res.status(500).json({ msg: err.message || "Server Error" });
+});
+
+// Server Start
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT} 🚀`);
 });
