@@ -1,0 +1,28 @@
+# 🔥 Node modules
+node_modules/
+
+# 🔥 Env files (IMPORTANT - never push secrets)
+.env
+
+# 🔥 Logs
+logs
+*.log
+npm-debug.log*
+
+#  OS files
+.DS_Store
+Thumbs.db
+
+#  Build folders
+dist/
+build/
+
+#  Vite cache
+.vite/
+
+.vscode/
+.idea/
+
+coverage/
+.AppleDouble
+.LSOverride
