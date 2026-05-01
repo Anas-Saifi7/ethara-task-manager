@@ -11,43 +11,57 @@ import userRoutes from "./routes/userRoutes.js";
 dotenv.config();
 const app = express();
 
-// ✅ CORS CONFIG
-const corsOptions = {
-  origin: true,
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-};
+// ✅ Smart CORS - Pattern Based
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // Postman/mobile allow
 
-app.use(cors(corsOptions));
+      const isAllowed =
+        origin.endsWith(".vercel.app") ||   // ✅ Saare Vercel preview URLs
+        origin === "http://localhost:5173" ||
+        origin === "http://localhost:3000";
 
-//  PREFLIGHT - OLD WALI LINE HATA DO, YEH USE KARO
-app.options(/.*/, cors(corsOptions)); // ← regex use karo string * ki jagah
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        console.warn("⚠️ CORS Blocked:", origin);
+        callback(new Error("CORS not allowed: " + origin));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-// Middlewares
+// ✅ Preflight
+app.options(/.*/, cors());
+
+// ✅ Middlewares
 app.use(express.json());
 
-// DB Connection
+// ✅ DB Connection
 connectDB();
 
-// Test Route
+// ✅ Test Route
 app.get("/", (req, res) => {
   res.send("API is working 🚀");
 });
 
-// Routes
+// ✅ Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/users", userRoutes);
 
-// Global Error Handler
+// ✅ Global Error Handler
 app.use((err, req, res, next) => {
   console.error("❌ Error:", err.message);
   res.status(500).json({ msg: err.message || "Server Error" });
 });
 
-// Server Start
+// ✅ Server Start
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
